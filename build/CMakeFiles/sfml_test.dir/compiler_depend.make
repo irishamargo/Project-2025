@@ -107,6 +107,7 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
   /usr/include/c++/13/bits/hash_bytes.h \
   /usr/include/c++/13/bits/invoke.h \
   /usr/include/c++/13/bits/ios_base.h \
+  /usr/include/c++/13/bits/istream.tcc \
   /usr/include/c++/13/bits/locale_classes.h \
   /usr/include/c++/13/bits/locale_classes.tcc \
   /usr/include/c++/13/bits/locale_conv.h \
@@ -177,6 +178,8 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
   /usr/include/c++/13/initializer_list \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
+  /usr/include/c++/13/iostream \
+  /usr/include/c++/13/istream \
   /usr/include/c++/13/iterator \
   /usr/include/c++/13/locale \
   /usr/include/c++/13/map \
@@ -345,9 +348,7 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
-/usr/include/c++/13/bits/refwrap.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/c++/13/bits/predefined_ops.h:
 
@@ -366,8 +367,6 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 /usr/include/c++/13/bits/locale_facets_nonio.h:
 
 /usr/include/c++/13/bits/locale_facets.tcc:
-
-/usr/include/c++/13/bits/locale_conv.h:
 
 /usr/include/SFML/Graphics/RenderStates.hpp:
 
@@ -392,6 +391,10 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
 /usr/include/c++/13/bits/exception_ptr.h:
+
+/usr/include/c++/13/bits/locale_conv.h:
+
+/usr/include/c++/13/bits/istream.tcc:
 
 /usr/include/c++/13/bits/exception.h:
 
@@ -460,6 +463,10 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 /usr/include/x86_64-linux-gnu/sys/types.h:
 
 /usr/include/SFML/Window/Mouse.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
@@ -611,6 +618,10 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 
 /usr/include/SFML/System/Utf.inl:
 
+/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
+
+/usr/include/SFML/Graphics/PrimitiveType.hpp:
+
 /usr/include/SFML/System/Sleep.hpp:
 
 /usr/include/features.h:
@@ -657,6 +668,8 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 
 /usr/include/c++/13/bits/cxxabi_forced.h:
 
+/usr/include/c++/13/istream:
+
 /usr/include/SFML/Graphics.hpp:
 
 /usr/include/c++/13/bits/localefwd.h:
@@ -671,11 +684,13 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 
 /usr/include/c++/13/cstdio:
 
-/usr/include/SFML/Graphics/PrimitiveType.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
-
 /usr/include/SFML/System/Vector2.hpp:
+
+/usr/include/c++/13/iostream:
+
+/usr/include/c++/13/bits/refwrap.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
 
 /usr/include/c++/13/bits/stl_algo.h:
 
@@ -694,10 +709,6 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 /usr/include/c++/13/bits/stl_heap.h:
 
 /usr/include/c++/13/bits/stl_tempbuf.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
 /usr/include/c++/13/bits/stream_iterator.h:
 
@@ -754,8 +765,6 @@ CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
 /usr/include/c++/13/bits/stl_iterator.h:
 
 /usr/include/c++/13/ext/numeric_traits.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/c++/13/ext/string_conversions.h:
 
