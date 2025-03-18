@@ -6,7 +6,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
 
     sf::RectangleShape button(sf::Vector2f(200, 50));
-    button.setPosition(300, 275);
+    button.setPosition(1400, 900);
     button.setFillColor(sf::Color::Green);
     sf::RectangleShape square(sf::Vector2f(1000, 1060));
     square.setFillColor(sf::Color::White);
@@ -21,8 +21,8 @@ int main() {
     }
 
     sf::Text buttonText("Close", font, 24);
-    buttonText.setFillColor(sf::Color::White);
-    buttonText.setPosition(323, 285);
+    buttonText.setFillColor(sf::Color::Black);
+    buttonText.setPosition(1465, 910);
 
     while (window.isOpen()) {
         sf::Event event;
