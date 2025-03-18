@@ -7,14 +7,12 @@ int main() {
 
     sf::Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("fon2.jpg")) {
-        return -1; // Ошибка загрузки текстуры
+        return -1;
     }
 
-    // Создание спрайта для фона
     sf::Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
 
-    // Масштабирование спрайта под размер окна (опционально)
     sf::Vector2u windowSize = window.getSize();
     sf::Vector2u textureSize = backgroundTexture.getSize();
     backgroundSprite.setScale(
@@ -22,11 +20,16 @@ int main() {
         static_cast<float>(windowSize.y) / textureSize.y
     );
 
-    sf::RectangleShape button(sf::Vector2f(200, 50));
-    button.setPosition(1400, 900);
-    button.setFillColor(sf::Color::Green);
+    sf::RectangleShape button_close(sf::Vector2f(200, 50));
+    button_close.setPosition(1400, 900);
+    button_close.setFillColor(sf::Color{255, 191, 223, 200});
+
+    sf::RectangleShape button_check(sf::Vector2f(200, 50));
+    button_check.setPosition(1400, 800);
+    button_check.setFillColor(sf::Color{255, 191, 223, 200});
+
     sf::RectangleShape square(sf::Vector2f(1000, 1060));
-    square.setFillColor(sf::Color::White);
+    square.setFillColor(sf::Color{255, 255, 255, 150});
     square.setPosition(5, 5);
 
 
@@ -37,9 +40,14 @@ int main() {
         }
     }
 
-    sf::Text buttonText("Close", font, 24);
-    buttonText.setFillColor(sf::Color::Black);
-    buttonText.setPosition(1465, 910);
+    sf::Text buttonText_close("Close", font, 24);
+    buttonText_close.setFillColor(sf::Color::Black);
+    buttonText_close.setPosition(1465, 910);
+
+    sf::Text buttonText_check("Check", font, 24);
+    buttonText_check.setFillColor(sf::Color::Black);
+    buttonText_check.setPosition(1465, 810);
+
 
     while (window.isOpen()) {
         sf::Event event;
@@ -50,7 +58,7 @@ int main() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    if (button.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    if (button_close.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         window.close();
                     }
                 }
@@ -60,8 +68,10 @@ int main() {
         window.clear();
         window.draw(backgroundSprite);
         window.draw(square);
-        window.draw(button);
-        window.draw(buttonText);
+        window.draw(button_close);
+        window.draw(button_check);
+        window.draw(buttonText_close);
+        window.draw(buttonText_check);
 
         window.display();
     }
