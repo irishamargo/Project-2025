@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/daria/Project-2025/main.cpp" "CMakeFiles/sfml_test.dir/main.cpp.o" "gcc" "CMakeFiles/sfml_test.dir/main.cpp.o.d"
+  "/home/ira/Project-2025/main.cpp" "CMakeFiles/sfml_test.dir/main.cpp.o" "gcc" "CMakeFiles/sfml_test.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
