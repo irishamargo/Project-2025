@@ -1,11 +1,11 @@
 #include <SFML/Graphics.hpp>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works!");
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Crossword");
 
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Red);
-    shape.setPosition(500, 500);
+    sf::RectangleShape square(sf::Vector2f(1000, 1060));
+    square.setFillColor(sf::Color::White);
+    square.setPosition(5, 5);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -15,7 +15,7 @@ int main() {
         }
 
         window.clear();
-        window.draw(shape);
+        window.draw(square);
         window.display();
     }
 
