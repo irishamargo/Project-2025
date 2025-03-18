@@ -1,0 +1,3 @@
+/home/daria/Project-2025/build/CMakeFiles/sfml_test.dir
+/home/daria/Project-2025/build/CMakeFiles/edit_cache.dir
+/home/daria/Project-2025/build/CMakeFiles/rebuild_cache.dir

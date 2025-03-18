@@ -1,7 +1,23 @@
-#include <iostream>
+#include <SFML/Graphics.hpp>
 
 int main() {
-    std::cout << "Hello, world!\n";
-    std::cout << "Bye, world!"<< std::endl;
+    sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works!");
+
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Red);
+    shape.setPosition(500, 500);
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(shape);
+        window.display();
+    }
+
     return 0;
 }
