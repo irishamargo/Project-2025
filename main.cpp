@@ -32,6 +32,27 @@ public:
     }
 };
 
+class Number {
+    public:
+    sf::Text text;
+
+    Number() {
+        text.setString(' ');
+        text.setCharacterSize(24);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(0, 0);
+    }
+
+    Number(char* buf, const sf::Font& font, int x, int y){
+        text.setString(buf);
+        text.setFont(font);
+        text.setCharacterSize(24);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(x, y);
+    }
+
+};
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
@@ -89,24 +110,37 @@ int main()
     }
 
     int countColumns{};
-    int countLines{};
+    int countLines = 5;
     char size[kSizeMas];
     Keys.getline(size, kSizeMas);
 
-    char buf[kSizeMas];
-    Keys.getline(buf, kSizeMas);
-    int len = strlen(buf);
-
-    for (int i = len; i < kSizeMas; ++i) {
-         buf[i] = ' ';
+    Number ArrayNumberLines[kSizeCage];
+    int xLine = 35;
+    int yLine = 110;
+    for (int i = 0; i < 15; ++i)
+    {
+        char buf[kSizeMas];
+        Keys.getline(buf, kSizeMas);
+        ArrayNumberLines[i].text.setString(buf);
+        ArrayNumberLines[i].text.setFont(font);
+        ArrayNumberLines[i].text.setPosition(xLine, yLine+(i*55));
     }
 
-    buf[kSizeMas - 1] = '\0';
-    sf::Text buttonText_len(buf, font, 24);
-    buttonText_len.setFillColor(sf::Color::Red);
-    buttonText_len.setPosition(1465, 910);
+    // for (int i = 0; i < countLines, ++i) {
+    // char buf[kSizeMas];
+    // Keys.getline(buf, kSizeMas);
+    // int len = strlen(buf);
 
+    // for (int j = len; j < kSizeMas; ++j) {
+    //      buf[j] = ' ';
+    // }
 
+    // buf[kSizeMas - 1] = '\0';
+
+    // }
+// sf::Text buttonText_len(buf, font, 24);
+//     buttonText_len.setFillColor(sf::Color::White);
+//     buttonText_len.setPosition(35, 110);
     while (window.isOpen())
     {
         sf::Event event;
@@ -162,7 +196,9 @@ int main()
         window.draw(button_check);
         window.draw(buttonText_close);
         window.draw(buttonText_check);
-        window.draw(buttonText_len);
+        for (int i = 0; i < kSizeCage; ++i) {
+            window.draw(ArrayNumberLines[i].text);
+        }
 
         window.display();
     }
