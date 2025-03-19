@@ -3,12 +3,20 @@
 
 namespace {
     int kSizeCage = 50;
+    int kSizeMas = 5;
 }
 
 class Cage {
     public:
       sf::RectangleShape cageI;
       int status;
+
+      Cage() {
+        cageI.setSize(sf::Vector2f(kSizeCage, kSizeCage));
+        cageI.setFillColor(sf::Color{255, 255, 255, 150});
+        cageI.setPosition(0, 0);
+        status = 0;
+      }
 
       Cage(int x, int y) {
         cageI.setSize(sf::Vector2f(kSizeCage, kSizeCage));
@@ -39,8 +47,12 @@ int main() {
     button_check.setPosition(1400, 800);
     button_check.setFillColor(sf::Color{255, 191, 223, 200});
 
-    Cage cage1(100, 100);
-    Cage cage2(200, 200);
+    Cage mas[kSizeMas];
+    int x = 100;
+    int y = 100;
+    for (int i = 0; i < 5; ++i) {
+        mas[i].cageI.setPosition(x+(60*i), y);
+    }
 
     sf::Font font;
     if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
@@ -71,24 +83,29 @@ int main() {
                         window.close();
                     }
 
-                    if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 0) {
-                        cage1.cageI.setFillColor(sf::Color{0, 200, 0, 200});
-                        cage1.status = 1;
-                    } else if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 1) {
-                        cage1.cageI.setFillColor(sf::Color{255, 255, 255, 255});
-                        cage1.status = 2;
-                    } else if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 2) {
-                        cage1.cageI.setFillColor(sf::Color{255, 255, 255, 150});
-                        cage1.status = 0;
+                    for (int i = 0; i < 5; ++i) {
+                        if (mas[i].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i].status == 0) {
+                            mas[i].cageI.setFillColor(sf::Color{0, 200, 0, 200});
+                            mas[i].status = 1;
+                        } else if (mas[i].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i].status == 1) {
+                            mas[i].cageI.setFillColor(sf::Color{255, 255, 255, 255});
+                            mas[i].status = 2;
+                        } else if (mas[i].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i].status == 2) {
+                            mas[i].cageI.setFillColor(sf::Color{255, 255, 255, 150});
+                            mas[i].status = 0;
+                        }
                     }
+
+
                 }
             }
         }
 
         window.clear();
         window.draw(backgroundSprite);
-        window.draw(cage1.cageI);
-        window.draw(cage2.cageI);
+        for (int i = 0; i < 5; ++i){
+            window.draw(mas[i].cageI);
+        }
         window.draw(button_close);
         window.draw(button_check);
         window.draw(buttonText_close);
