@@ -1,8 +1,25 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+namespace {
+    int kSizeCage = 50;
+}
+
+class Cage {
+    public:
+      sf::RectangleShape cageI;
+      int status;
+
+      Cage(int x, int y) {
+        cageI.setSize(sf::Vector2f(kSizeCage, kSizeCage));
+        cageI.setFillColor(sf::Color{255, 255, 255, 150});
+        cageI.setPosition(x, y);
+        status = 0;
+      }
+
+};
+
 int main() {
-    setlocale(LC_ALL, "RUS");
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
 
     sf::Texture backgroundTexture;
@@ -13,12 +30,6 @@ int main() {
     sf::Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
 
-    sf::Vector2u windowSize = window.getSize();
-    sf::Vector2u textureSize = backgroundTexture.getSize();
-    backgroundSprite.setScale(
-        static_cast<float>(windowSize.x) / textureSize.x,
-        static_cast<float>(windowSize.y) / textureSize.y
-    );
 
     sf::RectangleShape button_close(sf::Vector2f(200, 50));
     button_close.setPosition(1400, 900);
@@ -28,10 +39,8 @@ int main() {
     button_check.setPosition(1400, 800);
     button_check.setFillColor(sf::Color{255, 191, 223, 200});
 
-    sf::RectangleShape square(sf::Vector2f(1000, 1060));
-    square.setFillColor(sf::Color{255, 255, 255, 150});
-    square.setPosition(5, 5);
-
+    Cage cage1(100, 100);
+    Cage cage2(200, 200);
 
     sf::Font font;
     if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) {
@@ -61,13 +70,25 @@ int main() {
                     if (button_close.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         window.close();
                     }
+
+                    if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 0) {
+                        cage1.cageI.setFillColor(sf::Color{0, 200, 0, 200});
+                        cage1.status = 1;
+                    } else if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 1) {
+                        cage1.cageI.setFillColor(sf::Color{255, 255, 255, 255});
+                        cage1.status = 2;
+                    } else if (cage1.cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && cage1.status == 2) {
+                        cage1.cageI.setFillColor(sf::Color{255, 255, 255, 150});
+                        cage1.status = 0;
+                    }
                 }
             }
         }
 
         window.clear();
         window.draw(backgroundSprite);
-        window.draw(square);
+        window.draw(cage1.cageI);
+        window.draw(cage2.cageI);
         window.draw(button_close);
         window.draw(button_check);
         window.draw(buttonText_close);
