@@ -1,146 +1,120 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include <fstream>
-#include <cstring>
+#include "Crossword.h"
 
-namespace
+// Реализация методов класса Cell
+Cell::Cell()
 {
-    int kSizeCage = 50;
-    int kSizeMas = 15;
+    shape.setSize(sf::Vector2f(kCellSize, kCellSize));
+    shape.setFillColor(sf::Color{255, 255, 255, 150});
+    shape.setPosition(0, 0);
+    status = 0;
 }
 
-class Cage
+Cell::Cell(int x, int y)
 {
-public:
-    sf::RectangleShape cageI;
-    int status;
+    shape.setSize(sf::Vector2f(kCellSize, kCellSize));
+    shape.setFillColor(sf::Color{255, 255, 255, 150});
+    shape.setPosition(x, y);
+    status = 0;
+}
 
-    Cage()
-    {
-        cageI.setSize(sf::Vector2f(kSizeCage, kSizeCage));
-        cageI.setFillColor(sf::Color{255, 255, 255, 150});
-        cageI.setPosition(0, 0);
-        status = 0;
-    }
+// Реализация методов класса Number
+Number::Number()
+{
+    text.setString(' ');
+    text.setCharacterSize(24);
+    text.setFillColor(sf::Color::White);
+    text.setPosition(0, 0);
+}
 
-    Cage(int x, int y)
-    {
-        cageI.setSize(sf::Vector2f(kSizeCage, kSizeCage));
-        cageI.setFillColor(sf::Color{255, 255, 255, 150});
-        cageI.setPosition(x, y);
-        status = 0;
-    }
-};
-
-class Number {
-    public:
-    sf::Text text;
-
-    Number() {
-        text.setString(' ');
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(0, 0);
-    }
-
-    Number(char* buf, const sf::Font& font, int x, int y){
-        text.setString(buf);
-        text.setFont(font);
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(x, y);
-    }
-
-};
+Number::Number(const char *buffer, const sf::Font &font, int x, int y)
+{
+    text.setString(buffer);
+    text.setFont(font);
+    text.setCharacterSize(24);
+    text.setFillColor(sf::Color::White);
+    text.setPosition(x, y);
+}
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
 
+    // Загрузка фонового изображения
     sf::Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("fon2.jpg"))
     {
+        std::cerr << "Failed to load background image!" << std::endl;
         return -1;
     }
 
     sf::Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
 
-    sf::RectangleShape button_close(sf::Vector2f(200, 50));
-    button_close.setPosition(1400, 900);
-    button_close.setFillColor(sf::Color{255, 191, 223, 200});
+    // Создание кнопок
+    sf::RectangleShape closeButton(sf::Vector2f(200, 50));
+    closeButton.setPosition(1600, 900);
+    closeButton.setFillColor(sf::Color{255, 191, 223, 200});
 
-    sf::RectangleShape button_check(sf::Vector2f(200, 50));
-    button_check.setPosition(1400, 800);
-    button_check.setFillColor(sf::Color{255, 191, 223, 200});
+    sf::RectangleShape checkButton(sf::Vector2f(200, 50));
+    checkButton.setPosition(1300, 900);
+    checkButton.setFillColor(sf::Color{255, 191, 223, 200});
 
-    Cage mas[kSizeMas][kSizeMas];
-    int x = 100;
-    int y = 100;
-    for (int i = 0; i < 15; ++i)
+    // Создание сетки клеток
+    Cell grid[kGridSize][kGridSize];
+    int startX = 100;
+    int startY = 100;
+    for (int i = 0; i < kGridSize; ++i)
     {
-        for (int j = 0; j < 15; ++j)
+        for (int j = 0; j < kGridSize; ++j)
         {
-            mas[i][j].cageI.setPosition(x + (55 * i), y + (55 * j));
+            grid[i][j].shape.setPosition(startX + (55 * i), startY + (55 * j));
         }
     }
 
+    // Загрузка шрифта
     sf::Font font;
     if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
     {
         if (!font.loadFromFile("arial.ttf"))
         {
+            std::cerr << "Failed to load font!" << std::endl;
             return -1;
         }
     }
 
-    sf::Text buttonText_close("Close", font, 24);
-    buttonText_close.setFillColor(sf::Color::Black);
-    buttonText_close.setPosition(1465, 910);
+    // Текст для кнопок
+    sf::Text closeButtonText("Close", font, 24);
+    closeButtonText.setFillColor(sf::Color::Black);
+    closeButtonText.setPosition(1665, 910);
 
-    sf::Text buttonText_check("Check", font, 24);
-    buttonText_check.setFillColor(sf::Color::Black);
-    buttonText_check.setPosition(1465, 810);
+    sf::Text checkButtonText("Check", font, 24);
+    checkButtonText.setFillColor(sf::Color::Black);
+    checkButtonText.setPosition(1365, 910);
 
-    //считывание данных из файла
-    std::ifstream Keys("puzzle.txt");
-    if (!Keys) {
-        std::cout << "Файл не найден" << std::endl;
+    // Загрузка данных из файла
+    std::ifstream puzzleFile("puzzle.txt");
+    if (!puzzleFile)
+    {
+        std::cerr << "File not found!" << std::endl;
         return -1;
     }
 
     int countColumns{};
     int countLines = 5;
-    char size[kSizeMas];
-    Keys.getline(size, kSizeMas);
+    char sizeBuffer[kGridSize];
+    puzzleFile.getline(sizeBuffer, kGridSize);
 
-    Number ArrayNumberLines[kSizeCage];
-    int xLine = 35;
-    int yLine = 110;
-    for (int i = 0; i < 15; ++i)
+    Number lineNumbers[kGridSize];
+    int numberX = 35;
+    int numberY = 110;
+    for (int i = 0; i < kGridSize; ++i)
     {
-        char buf[kSizeMas];
-        Keys.getline(buf, kSizeMas);
-        ArrayNumberLines[i].text.setString(buf);
-        ArrayNumberLines[i].text.setFont(font);
-        ArrayNumberLines[i].text.setPosition(xLine, yLine+(i*55));
+        char buffer[kGridSize];
+        puzzleFile.getline(buffer, kGridSize);
+        lineNumbers[i] = Number(buffer, font, numberX, numberY + (i * 55));
     }
 
-    // for (int i = 0; i < countLines, ++i) {
-    // char buf[kSizeMas];
-    // Keys.getline(buf, kSizeMas);
-    // int len = strlen(buf);
-
-    // for (int j = len; j < kSizeMas; ++j) {
-    //      buf[j] = ' ';
-    // }
-
-    // buf[kSizeMas - 1] = '\0';
-
-    // }
-// sf::Text buttonText_len(buf, font, 24);
-//     buttonText_len.setFillColor(sf::Color::White);
-//     buttonText_len.setPosition(35, 110);
+    // Основной цикл программы
     while (window.isOpen())
     {
         sf::Event event;
@@ -154,30 +128,35 @@ int main()
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    if (button_close.getGlobalBounds().contains(mousePos.x, mousePos.y))
+
+                    // Обработка нажатия на кнопку закрытия
+                    if (closeButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
                         window.close();
                     }
 
-                    for (int i = 0; i < 15; ++i)
+                    // Обработка нажатия на клетки
+                    for (int i = 0; i < kGridSize; ++i)
                     {
-                        for (int j = 0; j < 15; ++j)
+                        for (int j = 0; j < kGridSize; ++j)
                         {
-
-                            if (mas[i][j].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i][j].status == 0)
+                            if (grid[i][j].shape.getGlobalBounds().contains(mousePos.x, mousePos.y))
                             {
-                                mas[i][j].cageI.setFillColor(sf::Color{255, 153, 204, 225});
-                                mas[i][j].status = 1;
-                            }
-                            else if (mas[i][j].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i][j].status == 1)
-                            {
-                                mas[i][j].cageI.setFillColor(sf::Color{255, 255, 255, 225});
-                                mas[i][j].status = 2;
-                            }
-                            else if (mas[i][j].cageI.getGlobalBounds().contains(mousePos.x, mousePos.y) && mas[i][j].status == 2)
-                            {
-                                mas[i][j].cageI.setFillColor(sf::Color{255, 255, 255, 150});
-                                mas[i][j].status = 0;
+                                if (grid[i][j].status == 0)
+                                {
+                                    grid[i][j].shape.setFillColor(sf::Color{255, 153, 204, 225});
+                                    grid[i][j].status = 1;
+                                }
+                                else if (grid[i][j].status == 1)
+                                {
+                                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 225});
+                                    grid[i][j].status = 2;
+                                }
+                                else if (grid[i][j].status == 2)
+                                {
+                                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
+                                    grid[i][j].status = 0;
+                                }
                             }
                         }
                     }
@@ -185,19 +164,26 @@ int main()
             }
         }
 
+        // Отрисовка
         window.clear();
         window.draw(backgroundSprite);
-        for (int i = 0; i < 15; ++i)
+
+        for (int i = 0; i < kGridSize; ++i)
         {
-            for (int j = 0; j < 15; ++j)
-                window.draw(mas[i][j].cageI);
+            for (int j = 0; j < kGridSize; ++j)
+            {
+                window.draw(grid[i][j].shape);
+            }
         }
-        window.draw(button_close);
-        window.draw(button_check);
-        window.draw(buttonText_close);
-        window.draw(buttonText_check);
-        for (int i = 0; i < kSizeCage; ++i) {
-            window.draw(ArrayNumberLines[i].text);
+
+        window.draw(closeButton);
+        window.draw(checkButton);
+        window.draw(closeButtonText);
+        window.draw(checkButtonText);
+
+        for (int i = 0; i < kGridSize; ++i)
+        {
+            window.draw(lineNumbers[i].text);
         }
 
         window.display();
