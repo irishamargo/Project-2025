@@ -97,8 +97,14 @@ int main()
     closeButton.setFillColor(sf::Color{255, 191, 223, 200});
 
     sf::RectangleShape checkButton(sf::Vector2f(200, 50));
-    checkButton.setPosition(1300, 900);
+    checkButton.setPosition(1600, 700);
     checkButton.setFillColor(sf::Color{255, 191, 223, 200});
+
+    sf::RectangleShape chooseButton(sf::Vector2f(200, 50));
+    chooseButton.setPosition(1300, 700);
+    chooseButton.setFillColor(sf::Color{255, 191, 223, 200});
+
+    sf::RectangleShape optionsButton[kMaxPuzzles];
 
     // Создание сетки клеток
     Cell grid[kGridSize][kGridSize];
@@ -122,7 +128,28 @@ int main()
 
     sf::Text checkButtonText("Check", font, 24);
     checkButtonText.setFillColor(sf::Color::Black);
-    checkButtonText.setPosition(1365, 910);
+    checkButtonText.setPosition(1665, 710);
+
+    sf::Text chooseButtonText("Choose Task", font, 24);
+    chooseButtonText.setFillColor(sf::Color::Black);
+    chooseButtonText.setPosition(1325, 710);
+
+    sf::Text optionsText[kMaxPuzzles];
+
+    // Создание кнопок для выплывающего меню
+    const char *choosePuzzles[kMaxPuzzles] = {"Puzzle 1", "Puzzle 2", "Puzzle 3"};
+
+    for (int i = 0; i < kMaxPuzzles; ++i)
+    {
+        optionsButton[i].setSize(sf::Vector2f(200, 50));
+        optionsButton[i].setPosition(1300, 700 + 50 + i * 60 + 30);
+        optionsButton[i].setFillColor(sf::Color{255, 191, 223, 200});
+        optionsText[i] = sf::Text(choosePuzzles[i], font, 20);
+        optionsText[i].setFillColor(sf::Color::Black);
+        optionsText[i].setPosition(1310, 700 + 50 + i * 60 + 10 + 30);
+    }
+
+    bool menuOpen = false;
 
     // Создание ключей
     std::ifstream puzzleFile("puzzle.txt");
@@ -138,7 +165,6 @@ int main()
     char sizeBuffer[kGridSize];
     puzzleFile.getline(sizeBuffer, kGridSize);
 
-
     Number lineNumbers[kGridSize][kGridSize];
     int numberX = 80;
     int numberY = 110;
@@ -151,15 +177,22 @@ int main()
         int j = 0;
         int k = 0;
         int p = 0;
-        while(buffer[j] != '\0') {
-            if (buffer[j] != ' ') {
+        while (buffer[j] != '\0')
+        {
+            if (buffer[j] != ' ')
+            {
                 str[k] = buffer[j];
                 ++k;
-            } else {
+            }
+            else
+            {
                 lineNumbers[i][p].text.setFont(font);
                 lineNumbers[i][p].text.setString(str);
-                lineNumbers[i][p].text.setPosition(numberX - (p*35), numberY);
-                for (int s = 0; s < kGridSize; ++s) {str[s] = ' ';}
+                lineNumbers[i][p].text.setPosition(numberX - (p * 35), numberY);
+                for (int s = 0; s < kGridSize; ++s)
+                {
+                    str[s] = ' ';
+                }
                 k = 0;
                 ++p;
             }
@@ -167,8 +200,8 @@ int main()
         }
         lineNumbers[i][p].text.setFont(font);
         lineNumbers[i][p].text.setString(str);
-        lineNumbers[i][p].text.setPosition(numberX - (p*35), numberY);
-        numberY+= 55;
+        lineNumbers[i][p].text.setPosition(numberX - (p * 35), numberY);
+        numberY += 55;
     }
 
     // Для столбцов
@@ -184,15 +217,22 @@ int main()
         int j = 0;
         int k = 0;
         int p = 0;
-        while(buffer[j] != '\0') {
-            if (buffer[j] != ' ') {
+        while (buffer[j] != '\0')
+        {
+            if (buffer[j] != ' ')
+            {
                 str[k] = buffer[j];
                 ++k;
-            } else {
+            }
+            else
+            {
                 ColumnNumbers[i][p].text.setFont(font);
                 ColumnNumbers[i][p].text.setString(str);
-                ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p*30));
-                for (int s = 0; s < kGridSize; ++s) {str[s] = ' ';}
+                ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p * 30));
+                for (int s = 0; s < kGridSize; ++s)
+                {
+                    str[s] = ' ';
+                }
                 k = 0;
                 ++p;
             }
@@ -200,10 +240,9 @@ int main()
         }
         ColumnNumbers[i][p].text.setFont(font);
         ColumnNumbers[i][p].text.setString(str);
-        ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p*30));
+        ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p * 30));
         numberX += 55;
     }
-
 
     // Основной цикл программы
     while (window.isOpen())
@@ -226,6 +265,32 @@ int main()
                         window.close();
                     }
 
+                    // Обработка нажатия на кнопку "Check"
+                    if (checkButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
+                    {
+                        // Добавьте здесь логику для проверки решения
+                    }
+
+                    // Обработка нажатия на кнопку "Choose Task"
+                    if (chooseButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
+                    {
+                        menuOpen = !menuOpen; // Переключение состояния меню
+                    }
+
+                    // Обработка выбора опции в выпадающем меню
+                    if (menuOpen)
+                    {
+                        for (int i = 0; i < kMaxPuzzles; ++i)
+                        {
+                            if (optionsButton[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
+                            {
+                                menuOpen = false; // Закрыть меню после выбора
+                                chooseButtonText.setString(optionsText[i].getString()); // Обновить текст на кнопке
+                                // Добавьте здесь логику для загрузки выбранной задачи
+                            }
+                        }
+                    }
+
                     // Обработка нажатия на клетки
                     HandleCellClick(grid, mousePos);
                 }
@@ -246,19 +311,33 @@ int main()
 
         window.draw(closeButton);
         window.draw(checkButton);
+        window.draw(chooseButton);
         window.draw(closeButtonText);
         window.draw(checkButtonText);
+        window.draw(chooseButtonText);
+
+        // Отрисовка выпадающего меню (если оно открыто)
+        if (menuOpen)
+        {
+            for (int i = 0; i < kMaxPuzzles; ++i)
+            {
+                window.draw(optionsButton[i]);
+                window.draw(optionsText[i]);
+            }
+        }
 
         for (int i = 0; i < kGridSize; ++i)
         {
-            for (int j = 0; j < kGridSize; ++j) {
+            for (int j = 0; j < kGridSize; ++j)
+            {
                 window.draw(lineNumbers[i][j].text);
             }
         }
 
         for (int i = 0; i < kGridSize; ++i)
         {
-            for (int j = 0; j <kGridSize; ++j) {
+            for (int j = 0; j < kGridSize; ++j)
+            {
                 window.draw(ColumnNumbers[i][j].text);
             }
         }

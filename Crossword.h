@@ -10,6 +10,7 @@ namespace
 {
     const int kCellSize = 50;
     const int kGridSize = 15;
+    const int kMaxPuzzles = 3;
 }
 
 class Cell
