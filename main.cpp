@@ -35,6 +35,47 @@ Number::Number(const char *buffer, const sf::Font &font, int x, int y)
     text.setPosition(x, y);
 }
 
+// Создание сетки клеток
+void CreateGrid(Cell grid[kGridSize][kGridSize])
+{
+    for (int i = 0; i < kGridSize; ++i)
+    {
+        for (int j = 0; j < kGridSize; ++j)
+        {
+            grid[i][j].shape.setPosition(100 + (55 * i), 100 + (55 * j));
+        }
+    }
+}
+
+// Обработка нажатия на клетки
+void HandleCellClick(Cell grid[kGridSize][kGridSize], sf::Vector2i mousePos)
+{
+    for (int i = 0; i < kGridSize; ++i)
+    {
+        for (int j = 0; j < kGridSize; ++j)
+        {
+            if (grid[i][j].shape.getGlobalBounds().contains(mousePos.x, mousePos.y))
+            {
+                if (grid[i][j].status == 0)
+                {
+                    grid[i][j].shape.setFillColor(sf::Color{255, 153, 204, 225});
+                    grid[i][j].status = 1;
+                }
+                else if (grid[i][j].status == 1)
+                {
+                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 225});
+                    grid[i][j].status = 2;
+                }
+                else if (grid[i][j].status == 2)
+                {
+                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
+                    grid[i][j].status = 0;
+                }
+            }
+        }
+    }
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
@@ -61,15 +102,7 @@ int main()
 
     // Создание сетки клеток
     Cell grid[kGridSize][kGridSize];
-    int startX = 100;
-    int startY = 100;
-    for (int i = 0; i < kGridSize; ++i)
-    {
-        for (int j = 0; j < kGridSize; ++j)
-        {
-            grid[i][j].shape.setPosition(startX + (55 * i), startY + (55 * j));
-        }
-    }
+    CreateGrid(grid);
 
     // Загрузка шрифта
     sf::Font font;
@@ -91,7 +124,7 @@ int main()
     checkButtonText.setFillColor(sf::Color::Black);
     checkButtonText.setPosition(1365, 910);
 
-    // Загрузка данных из файла
+    // Создание ключей
     std::ifstream puzzleFile("puzzle.txt");
     if (!puzzleFile)
     {
@@ -99,20 +132,78 @@ int main()
         return -1;
     }
 
+    // Для строк
     int countColumns{};
     int countLines = 5;
     char sizeBuffer[kGridSize];
     puzzleFile.getline(sizeBuffer, kGridSize);
 
-    Number lineNumbers[kGridSize];
-    int numberX = 35;
+
+    Number lineNumbers[kGridSize][kGridSize];
+    int numberX = 80;
     int numberY = 110;
     for (int i = 0; i < kGridSize; ++i)
     {
         char buffer[kGridSize];
         puzzleFile.getline(buffer, kGridSize);
-        lineNumbers[i] = Number(buffer, font, numberX, numberY + (i * 55));
+
+        char str[kGridSize];
+        int j = 0;
+        int k = 0;
+        int p = 0;
+        while(buffer[j] != '\0') {
+            if (buffer[j] != ' ') {
+                str[k] = buffer[j];
+                ++k;
+            } else {
+                lineNumbers[i][p].text.setFont(font);
+                lineNumbers[i][p].text.setString(str);
+                lineNumbers[i][p].text.setPosition(numberX - (p*35), numberY);
+                for (int s = 0; s < kGridSize; ++s) {str[s] = ' ';}
+                k = 0;
+                ++p;
+            }
+            ++j;
+        }
+        lineNumbers[i][p].text.setFont(font);
+        lineNumbers[i][p].text.setString(str);
+        lineNumbers[i][p].text.setPosition(numberX - (p*35), numberY);
+        numberY+= 55;
     }
+
+    // Для столбцов
+    Number ColumnNumbers[kGridSize][kGridSize];
+    numberX = 120;
+    numberY = 65;
+    for (int i = 0; i < kGridSize; ++i)
+    {
+        char buffer[kGridSize];
+        puzzleFile.getline(buffer, kGridSize);
+
+        char str[kGridSize];
+        int j = 0;
+        int k = 0;
+        int p = 0;
+        while(buffer[j] != '\0') {
+            if (buffer[j] != ' ') {
+                str[k] = buffer[j];
+                ++k;
+            } else {
+                ColumnNumbers[i][p].text.setFont(font);
+                ColumnNumbers[i][p].text.setString(str);
+                ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p*30));
+                for (int s = 0; s < kGridSize; ++s) {str[s] = ' ';}
+                k = 0;
+                ++p;
+            }
+            ++j;
+        }
+        ColumnNumbers[i][p].text.setFont(font);
+        ColumnNumbers[i][p].text.setString(str);
+        ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p*30));
+        numberX += 55;
+    }
+
 
     // Основной цикл программы
     while (window.isOpen())
@@ -136,30 +227,7 @@ int main()
                     }
 
                     // Обработка нажатия на клетки
-                    for (int i = 0; i < kGridSize; ++i)
-                    {
-                        for (int j = 0; j < kGridSize; ++j)
-                        {
-                            if (grid[i][j].shape.getGlobalBounds().contains(mousePos.x, mousePos.y))
-                            {
-                                if (grid[i][j].status == 0)
-                                {
-                                    grid[i][j].shape.setFillColor(sf::Color{255, 153, 204, 225});
-                                    grid[i][j].status = 1;
-                                }
-                                else if (grid[i][j].status == 1)
-                                {
-                                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 225});
-                                    grid[i][j].status = 2;
-                                }
-                                else if (grid[i][j].status == 2)
-                                {
-                                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
-                                    grid[i][j].status = 0;
-                                }
-                            }
-                        }
-                    }
+                    HandleCellClick(grid, mousePos);
                 }
             }
         }
@@ -183,7 +251,16 @@ int main()
 
         for (int i = 0; i < kGridSize; ++i)
         {
-            window.draw(lineNumbers[i].text);
+            for (int j = 0; j < kGridSize; ++j) {
+                window.draw(lineNumbers[i][j].text);
+            }
+        }
+
+        for (int i = 0; i < kGridSize; ++i)
+        {
+            for (int j = 0; j <kGridSize; ++j) {
+                window.draw(ColumnNumbers[i][j].text);
+            }
         }
 
         window.display();

@@ -31,4 +31,7 @@ public:
     Number(const char *buffer, const sf::Font &font, int x, int y);
 };
 
+void CreateGrid(Cell grid[kGridSize][kGridSize]);
+void HandleCellClick(Cell grid[kGridSize][kGridSize], sf::Vector2i mousePos);
+
 #endif // CROSSWORD_H

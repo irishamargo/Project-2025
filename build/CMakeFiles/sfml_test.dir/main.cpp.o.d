@@ -1,5 +1,5 @@
-CMakeFiles/sfml_test.dir/main.cpp.o: /home/daria/Project-2025/main.cpp \
- /usr/include/stdc-predef.h /home/daria/Project-2025/Crossword.h \
+CMakeFiles/sfml_test.dir/main.cpp.o: /home/ira/Project-2025/main.cpp \
+ /usr/include/stdc-predef.h /home/ira/Project-2025/Crossword.h \
  /usr/include/SFML/Graphics.hpp /usr/include/SFML/Window.hpp \
  /usr/include/SFML/System.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/System/Clock.hpp /usr/include/SFML/System/Export.hpp \
