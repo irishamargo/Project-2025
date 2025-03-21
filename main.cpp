@@ -259,22 +259,18 @@ int main()
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
-                    // Обработка нажатия на кнопку закрытия
                     if (closeButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
                         window.close();
                     }
 
-                    // Обработка нажатия на кнопку "Check"
                     if (checkButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
-                        // Добавьте здесь логику для проверки решения
                     }
 
-                    // Обработка нажатия на кнопку "Choose Task"
                     if (chooseButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
-                        menuOpen = !menuOpen; // Переключение состояния меню
+                        menuOpen = !menuOpen;
                     }
 
                     // Обработка выбора опции в выпадающем меню
@@ -284,9 +280,8 @@ int main()
                         {
                             if (optionsButton[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
                             {
-                                menuOpen = false; // Закрыть меню после выбора
-                                chooseButtonText.setString(optionsText[i].getString()); // Обновить текст на кнопке
-                                // Добавьте здесь логику для загрузки выбранной задачи
+                                menuOpen = false;
+                                chooseButtonText.setString(optionsText[i].getString());
                             }
                         }
                     }
@@ -316,7 +311,6 @@ int main()
         window.draw(checkButtonText);
         window.draw(chooseButtonText);
 
-        // Отрисовка выпадающего меню (если оно открыто)
         if (menuOpen)
         {
             for (int i = 0; i < kMaxPuzzles; ++i)
