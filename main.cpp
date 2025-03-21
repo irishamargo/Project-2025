@@ -244,6 +244,39 @@ int main()
         numberX += 55;
     }
 
+    // Линии разделения сетки
+    sf::RectangleShape line1(sf::Vector2f(830, 5));
+    line1.setPosition(95, 95);
+    line1.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line2(sf::Vector2f(820, 5));
+    line2.setPosition(100, 370);
+    line2.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line3(sf::Vector2f(820, 5));
+    line3.setPosition(100, 645);
+    line3.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line4(sf::Vector2f(830, 5));
+    line4.setPosition(95, 920);
+    line4.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line5(sf::Vector2f(5, 820));
+    line5.setPosition(95, 100);
+    line5.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line6(sf::Vector2f(5, 820));
+    line6.setPosition(370, 100);
+    line6.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line7(sf::Vector2f(5, 820));
+    line7.setPosition(645, 100);
+    line7.setFillColor(sf::Color{255, 191, 223, 255});
+
+    sf::RectangleShape line8(sf::Vector2f(5, 820));
+    line8.setPosition(920, 100);
+    line8.setFillColor(sf::Color{255, 191, 223, 255});
+
     // Основной цикл программы
     while (window.isOpen())
     {
@@ -335,6 +368,15 @@ int main()
                 window.draw(ColumnNumbers[i][j].text);
             }
         }
+
+        window.draw(line1);
+        window.draw(line2);
+        window.draw(line3);
+        window.draw(line4);
+        window.draw(line5);
+        window.draw(line6);
+        window.draw(line7);
+        window.draw(line8);
 
         window.display();
     }
