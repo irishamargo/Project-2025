@@ -76,6 +76,30 @@ void HandleCellClick(Cell grid[kGridSize][kGridSize], sf::Vector2i mousePos)
     }
 }
 
+//Обработка нажатия на кнопку проверки
+bool Check(char* name, Cell grid[kGridSize][kGridSize]) {
+    std::ifstream puzzleAnswerFile(name);
+    if (!puzzleAnswerFile)
+    {
+        std::cerr << "File not found!" << std::endl;
+        return -1;
+    }
+
+    for (int i = 0; i < kGridSize; ++i) {
+        char buf[kGridSize+1];
+        puzzleAnswerFile >> buf;
+        std::cout << buf << '\n';
+        for (int j = 0; j < kGridSize; ++j) {
+            if (grid[i][j].status == 1 && buf[j] == '0') {
+                return false;
+            } else if ((grid[i][j].status == 0 || grid[i][j].status == 2) && buf[j] == '1') {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
@@ -277,6 +301,11 @@ int main()
     line8.setPosition(920, 100);
     line8.setFillColor(sf::Color{255, 191, 223, 255});
 
+
+    sf::Text Answer("None", font, 24);
+    Answer.setFillColor(sf::Color::White);
+    Answer.setPosition(20, 20);
+
     // Основной цикл программы
     while (window.isOpen())
     {
@@ -299,6 +328,14 @@ int main()
 
                     if (checkButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
+                        bool result = Check("puzzleAnswer.txt", grid);
+                        if (result) {
+                            Answer.setString("True");
+                        } else {
+                            Answer.setString("False");
+                        }
+
+
                     }
 
                     if (chooseButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
@@ -377,6 +414,8 @@ int main()
         window.draw(line6);
         window.draw(line7);
         window.draw(line8);
+
+        window.draw(Answer);
 
         window.display();
     }
