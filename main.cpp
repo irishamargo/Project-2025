@@ -1,4 +1,5 @@
 #include "Crossword.h"
+#include "workingKeys.hpp"
 
 // Реализация методов класса Cell
 Cell::Cell()
@@ -17,42 +18,24 @@ Cell::Cell(int x, int y)
     status = 0;
 }
 
-// Реализация методов класса Number
-Number::Number()
-{
-    text.setString(' ');
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::White);
-    text.setPosition(0, 0);
-}
-
-Number::Number(const char *buffer, const sf::Font &font, int x, int y)
-{
-    text.setString(buffer);
-    text.setFont(font);
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::White);
-    text.setPosition(x, y);
-}
-
 // Создание сетки клеток
-void CreateGrid(Cell grid[kGridSize][kGridSize])
+void CreateGrid(Cell** grid, int gridSize)
 {
-    for (int i = 0; i < kGridSize; ++i)
+    for (int i = 0; i < gridSize; ++i)
     {
-        for (int j = 0; j < kGridSize; ++j)
+        for (int j = 0; j < gridSize; ++j)
         {
-            grid[i][j].shape.setPosition(100 + (55 * i), 100 + (55 * j));
+            grid[i][j].shape.setPosition(100 + (55 * j), 100 + (55 * i));
         }
     }
 }
 
 // Обработка нажатия на клетки
-void HandleCellClick(Cell grid[kGridSize][kGridSize], sf::Vector2i mousePos)
+void HandleCellClick(Cell** grid, sf::Vector2i mousePos, int gridSize)
 {
-    for (int i = 0; i < kGridSize; ++i)
+    for (int i = 0; i < gridSize; ++i)
     {
-        for (int j = 0; j < kGridSize; ++j)
+        for (int j = 0; j < gridSize; ++j)
         {
             if (grid[i][j].shape.getGlobalBounds().contains(mousePos.x, mousePos.y))
             {
@@ -77,22 +60,21 @@ void HandleCellClick(Cell grid[kGridSize][kGridSize], sf::Vector2i mousePos)
 }
 
 //Обработка нажатия на кнопку проверки
-bool Check(char* name, Cell grid[kGridSize][kGridSize]) {
+bool Check(char* name, Cell** grid, int gridSize) {
     std::ifstream puzzleAnswerFile(name);
     if (!puzzleAnswerFile)
     {
         std::cerr << "File not found!" << std::endl;
-        return -1;
+        return false;
     }
 
-    for (int i = 0; i < kGridSize; ++i) {
-        char buf[kGridSize+1];
+    for (int i = 0; i < gridSize; ++i) {
+        char buf[gridSize+1];
         puzzleAnswerFile >> buf;
-        std::cout << buf << '\n';
-        for (int j = 0; j < kGridSize; ++j) {
-            if (grid[i][j].status == 1 && buf[j] == '0') {
+        for (int j = 0; j < gridSize; ++j) {
+            if (grid[i][j].status == 1 && buf[j] != '1') {
                 return false;
-            } else if ((grid[i][j].status == 0 || grid[i][j].status == 2) && buf[j] == '1') {
+            } else if ((grid[i][j].status == 0 || grid[i][j].status == 2) && buf[j] != '0') {
                 return false;
             }
         }
@@ -131,8 +113,12 @@ int main()
     sf::RectangleShape optionsButton[kMaxPuzzles];
 
     // Создание сетки клеток
-    Cell grid[kGridSize][kGridSize];
-    CreateGrid(grid);
+    int gridSize = kGridSize;
+    Cell** grid = new Cell*[gridSize];
+    for (int i = 0; i < gridSize; ++i) {
+        grid[i] = new Cell[gridSize];
+    }
+    CreateGrid(grid, gridSize);
 
     // Загрузка шрифта
     sf::Font font;
@@ -176,97 +162,20 @@ int main()
     bool menuOpen = false;
 
     // Создание ключей
-    std::ifstream puzzleFile("puzzle.txt");
-    if (!puzzleFile)
-    {
-        std::cerr << "File not found!" << std::endl;
-        return -1;
-    }
 
     // Для строк
-    int countColumns{};
-    int countLines = 5;
-    char sizeBuffer[kGridSize];
-    puzzleFile.getline(sizeBuffer, kGridSize);
-
-    Number lineNumbers[kGridSize][kGridSize];
-    int numberX = 80;
-    int numberY = 110;
-    for (int i = 0; i < kGridSize; ++i)
-    {
-        char buffer[kGridSize];
-        puzzleFile.getline(buffer, kGridSize);
-
-        char str[kGridSize];
-        int j = 0;
-        int k = 0;
-        int p = 0;
-        while (buffer[j] != '\0')
-        {
-            if (buffer[j] != ' ')
-            {
-                str[k] = buffer[j];
-                ++k;
-            }
-            else
-            {
-                lineNumbers[i][p].text.setFont(font);
-                lineNumbers[i][p].text.setString(str);
-                lineNumbers[i][p].text.setPosition(numberX - (p * 35), numberY);
-                for (int s = 0; s < kGridSize; ++s)
-                {
-                    str[s] = ' ';
-                }
-                k = 0;
-                ++p;
-            }
-            ++j;
-        }
-        lineNumbers[i][p].text.setFont(font);
-        lineNumbers[i][p].text.setString(str);
-        lineNumbers[i][p].text.setPosition(numberX - (p * 35), numberY);
-        numberY += 55;
+    Number** lineNumbers = new Number*[gridSize];
+    for (int i = 0; i < gridSize; ++i) {
+        lineNumbers[i] = new Number[gridSize];
     }
 
     // Для столбцов
-    Number ColumnNumbers[kGridSize][kGridSize];
-    numberX = 120;
-    numberY = 65;
-    for (int i = 0; i < kGridSize; ++i)
-    {
-        char buffer[kGridSize];
-        puzzleFile.getline(buffer, kGridSize);
-
-        char str[kGridSize];
-        int j = 0;
-        int k = 0;
-        int p = 0;
-        while (buffer[j] != '\0')
-        {
-            if (buffer[j] != ' ')
-            {
-                str[k] = buffer[j];
-                ++k;
-            }
-            else
-            {
-                ColumnNumbers[i][p].text.setFont(font);
-                ColumnNumbers[i][p].text.setString(str);
-                ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p * 30));
-                for (int s = 0; s < kGridSize; ++s)
-                {
-                    str[s] = ' ';
-                }
-                k = 0;
-                ++p;
-            }
-            ++j;
-        }
-        ColumnNumbers[i][p].text.setFont(font);
-        ColumnNumbers[i][p].text.setString(str);
-        ColumnNumbers[i][p].text.setPosition(numberX, numberY - (p * 30));
-        numberX += 55;
+    Number** ColumnNumbers = new Number*[gridSize];
+    for (int i = 0; i < gridSize; ++i) {
+        ColumnNumbers[i] = new Number[gridSize];
     }
+
+    processKeys(lineNumbers, ColumnNumbers, "puzzle.txt", gridSize, font);
 
     // Линии разделения сетки
     sf::RectangleShape line1(sf::Vector2f(830, 5));
@@ -328,7 +237,7 @@ int main()
 
                     if (checkButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
                     {
-                        bool result = Check("puzzleAnswer.txt", grid);
+                        bool result = Check("puzzleAnswer.txt", grid, gridSize);
                         if (result) {
                             Answer.setString("True");
                         } else {
@@ -357,7 +266,7 @@ int main()
                     }
 
                     // Обработка нажатия на клетки
-                    HandleCellClick(grid, mousePos);
+                    HandleCellClick(grid, mousePos, gridSize);
                 }
             }
         }
@@ -366,9 +275,9 @@ int main()
         window.clear();
         window.draw(backgroundSprite);
 
-        for (int i = 0; i < kGridSize; ++i)
+        for (int i = 0; i < gridSize; ++i)
         {
-            for (int j = 0; j < kGridSize; ++j)
+            for (int j = 0; j < gridSize; ++j)
             {
                 window.draw(grid[i][j].shape);
             }
@@ -390,17 +299,17 @@ int main()
             }
         }
 
-        for (int i = 0; i < kGridSize; ++i)
+        for (int i = 0; i < gridSize; ++i)
         {
-            for (int j = 0; j < kGridSize; ++j)
+            for (int j = 0; j < gridSize; ++j)
             {
                 window.draw(lineNumbers[i][j].text);
             }
         }
 
-        for (int i = 0; i < kGridSize; ++i)
+        for (int i = 0; i < gridSize; ++i)
         {
-            for (int j = 0; j < kGridSize; ++j)
+            for (int j = 0; j < gridSize; ++j)
             {
                 window.draw(ColumnNumbers[i][j].text);
             }
@@ -419,6 +328,14 @@ int main()
 
         window.display();
     }
+
+    CleanupNumberArray(lineNumbers, gridSize);
+    CleanupNumberArray(ColumnNumbers, gridSize);
+
+    for (int i = 0; i < gridSize; ++i) {
+        delete[] grid[i];
+    }
+    delete[] grid;
 
     return 0;
 }

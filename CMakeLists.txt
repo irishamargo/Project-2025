@@ -3,7 +3,7 @@ project(SFML_Test_Project)
 
 find_package(SFML REQUIRED COMPONENTS graphics window system)
 
-add_executable(sfml_test main.cpp)
+add_executable(sfml_test main.cpp workingKeys.cpp)
 
 target_link_libraries(sfml_test
     PRIVATE
