@@ -10,5 +10,5 @@ public:
     Number(const char *buffer, const sf::Font &font, int x, int y);
 };
 
-void processKeys(Number** lineNumbers, Number** ColumnNumbers, char* file, int gridSize, sf::Font& font);
-void CleanupNumberArray(Number**& array, int gridSize);
+void processKeys(Number **lineNumbers, Number **columnNumbers, const char *file, int gridSize, sf::Font &font);
+void CleanupNumberArray(Number **&array, int gridSize);

@@ -1,136 +1,29 @@
-#include "Crossword.h"
-#include "workingKeys.hpp"
+#include "Cell.h"
+#include "GridManager.h"
+#include "workingKeys.h"
+#include "Constants.h"
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include <filesystem>
 
-// Реализация методов класса Cell
-Cell::Cell()
-{
-    shape.setSize(sf::Vector2f(kCellSize, kCellSize));
-    shape.setFillColor(sf::Color{255, 255, 255, 150});
-    shape.setPosition(0, 0);
-    status = 0;
-}
-
-Cell::Cell(int x, int y)
-{
-    shape.setSize(sf::Vector2f(kCellSize, kCellSize));
-    shape.setFillColor(sf::Color{255, 255, 255, 150});
-    shape.setPosition(x, y);
-    status = 0;
-}
-
-// Создание сетки клеток
-void CreateGrid(Cell** grid, int gridSize)
-{
-    for (int i = 0; i < gridSize; ++i)
-    {
-        for (int j = 0; j < gridSize; ++j)
-        {
-            grid[i][j].shape.setPosition(100 + (55 * j), 100 + (55 * i));
-        }
-    }
-}
-
-// Обработка нажатия на клетки
-void HandleCellClick(Cell** grid, sf::Vector2i mousePos, int gridSize)
-{
-    for (int i = 0; i < gridSize; ++i)
-    {
-        for (int j = 0; j < gridSize; ++j)
-        {
-            if (grid[i][j].shape.getGlobalBounds().contains(mousePos.x, mousePos.y))
-            {
-                if (grid[i][j].status == 0)
-                {
-                    grid[i][j].shape.setFillColor(sf::Color{255, 153, 204, 225});
-                    grid[i][j].status = 1;
-                }
-                else if (grid[i][j].status == 1)
-                {
-                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 225});
-                    grid[i][j].status = 2;
-                }
-                else if (grid[i][j].status == 2)
-                {
-                    grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
-                    grid[i][j].status = 0;
-                }
-            }
-        }
-    }
-}
-
-//Обработка нажатия на кнопку проверки
-bool Check(char* name, Cell** grid, int gridSize) {
-    std::ifstream puzzleAnswerFile(name);
-    if (!puzzleAnswerFile)
-    {
-        std::cerr << "File not found!" << std::endl;
-        return false;
-    }
-
-    for (int i = 0; i < gridSize; ++i) {
-        char buf[gridSize+1];
-        puzzleAnswerFile >> buf;
-        for (int j = 0; j < gridSize; ++j) {
-            if (grid[i][j].status == 1 && buf[j] != '1') {
-                return false;
-            } else if ((grid[i][j].status == 0 || grid[i][j].status == 2) && buf[j] != '0') {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-// Добавляем новые функции в конец файла
-void ResetGrid(Cell** grid, int gridSize) {
-    for (int i = 0; i < gridSize; ++i) {
-        for (int j = 0; j < gridSize; ++j) {
-            grid[i][j].status = 0;
-            grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
-        }
-    }
-}
+using namespace Constants;
+namespace fs = std::filesystem;
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
+    window.setFramerateLimit(60);
 
-    // Загрузка фонового изображения
+    // Загрузка фона
     sf::Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("fon2.jpg"))
     {
-        std::cerr << "Failed to load background image!" << std::endl;
-        return -1;
+        std::cerr << "Failed to load background image!\n";
+        return EXIT_FAILURE;
     }
+    sf::Sprite background(backgroundTexture);
 
-    sf::Sprite backgroundSprite;
-    backgroundSprite.setTexture(backgroundTexture);
-
-    // Создание кнопок
-    sf::RectangleShape closeButton(sf::Vector2f(200, 50));
-    closeButton.setPosition(1600, 900);
-    closeButton.setFillColor(sf::Color{255, 191, 223, 200});
-
-    sf::RectangleShape checkButton(sf::Vector2f(200, 50));
-    checkButton.setPosition(1600, 700);
-    checkButton.setFillColor(sf::Color{255, 191, 223, 200});
-
-    sf::RectangleShape chooseButton(sf::Vector2f(200, 50));
-    chooseButton.setPosition(1300, 700);
-    chooseButton.setFillColor(sf::Color{255, 191, 223, 200});
-
-    sf::RectangleShape optionsButton[kMaxPuzzles];
-
-    // Создание сетки клеток
-    int gridSize = kGridSize;
-    Cell** grid = new Cell*[gridSize];
-    for (int i = 0; i < gridSize; ++i) {
-        grid[i] = new Cell[gridSize];
-    }
-    CreateGrid(grid, gridSize);
-
-    // Загрузка шрифта
+    // Инициализация шрифта
     sf::Font font;
     if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
     {
@@ -141,49 +34,51 @@ int main()
         }
     }
 
-    // Текст для кнопок
-    sf::Text closeButtonText("Close", font, 24);
-    closeButtonText.setFillColor(sf::Color::Black);
-    closeButtonText.setPosition(1665, 910);
-
-    sf::Text checkButtonText("Check", font, 24);
-    checkButtonText.setFillColor(sf::Color::Black);
-    checkButtonText.setPosition(1665, 710);
-
-    sf::Text chooseButtonText("Choose Task", font, 24);
-    chooseButtonText.setFillColor(sf::Color::Black);
-    chooseButtonText.setPosition(1325, 710);
-
-    sf::Text optionsText[kMaxPuzzles];
-
-    // Создание кнопок для выплывающего меню
-    const char *choosePuzzles[kMaxPuzzles] = {"Puzzle 1", "Puzzle 2", "Puzzle 3"};
-
-    for (int i = 0; i < kMaxPuzzles; ++i)
+    const int gridSize = kGridSize;
+    Cell **grid = new Cell *[gridSize];
+    for (int i = 0; i < gridSize; ++i)
     {
-        optionsButton[i].setSize(sf::Vector2f(200, 50));
-        optionsButton[i].setPosition(1300, 700 + 50 + i * 60 + 30);
-        optionsButton[i].setFillColor(sf::Color{255, 191, 223, 200});
-        optionsText[i] = sf::Text(choosePuzzles[i], font, 20);
-        optionsText[i].setFillColor(sf::Color::Black);
-        optionsText[i].setPosition(1310, 700 + 50 + i * 60 + 10 + 30);
+        grid[i] = new Cell[gridSize];
     }
+    GridUtils::CreateGrid(grid, gridSize);
 
-    bool menuOpen = false;
-
-    // Создание ключей
-
-    // Для строк
-    Number** lineNumbers = new Number*[gridSize];
-    for (int i = 0; i < gridSize; ++i) {
+    // Система подсказок
+    Number **lineNumbers = new Number *[gridSize];
+    Number **columnNumbers = new Number *[gridSize];
+    for (int i = 0; i < gridSize; ++i)
+    {
         lineNumbers[i] = new Number[gridSize];
+        columnNumbers[i] = new Number[gridSize];
     }
 
-    // Для столбцов
-    Number** ColumnNumbers = new Number*[gridSize];
-    for (int i = 0; i < gridSize; ++i) {
-        ColumnNumbers[i] = new Number[gridSize];
-    }
+    // Кнопки интерфейса
+    const sf::Vector2f buttonSize(200, 50);
+    const sf::Color buttonColor(255, 191, 223, 200);
+
+    sf::RectangleShape closeButton(buttonSize);
+    closeButton.setPosition(1600, 900);
+    closeButton.setFillColor(buttonColor);
+
+    sf::RectangleShape checkButton(buttonSize);
+    checkButton.setPosition(1600, 700);
+    checkButton.setFillColor(buttonColor);
+
+    sf::RectangleShape chooseButton(buttonSize);
+    chooseButton.setPosition(1300, 700);
+    chooseButton.setFillColor(buttonColor);
+
+    // Тексты кнопок
+    sf::Text closeText("Close", font, 24);
+    closeText.setPosition(1665, 910);
+    closeText.setFillColor(sf::Color::Black);
+
+    sf::Text checkText("Check", font, 24);
+    checkText.setPosition(1665, 710);
+    checkText.setFillColor(sf::Color::Black);
+
+    sf::Text chooseText("Choose Puzzle", font, 24);
+    chooseText.setPosition(1320, 710);
+    chooseText.setFillColor(sf::Color::Black);
 
     // Линии разделения сетки
     sf::RectangleShape line1(sf::Vector2f(830, 5));
@@ -218,14 +113,32 @@ int main()
     line8.setPosition(920, 100);
     line8.setFillColor(sf::Color{255, 191, 223, 255});
 
+    // Меню выбора пазлов
+    const int maxPuzzles = 3;
+    sf::RectangleShape puzzleButtons[maxPuzzles];
+    sf::Text puzzleTexts[maxPuzzles];
+    for (int i = 0; i < maxPuzzles; ++i)
+    {
+        puzzleButtons[i].setSize(buttonSize);
+        puzzleButtons[i].setPosition(1300, 750 + i * 70);
+        puzzleButtons[i].setFillColor(buttonColor);
 
-    sf::Text Answer("None", font, 24);
-    Answer.setFillColor(sf::Color::White);
-    Answer.setPosition(20, 20);
+        puzzleTexts[i].setString("Puzzle " + std::to_string(i + 1));
+        puzzleTexts[i].setFont(font);
+        puzzleTexts[i].setCharacterSize(20);
+        puzzleTexts[i].setPosition(1310, 760 + i * 70);
+        puzzleTexts[i].setFillColor(sf::Color::Black);
+    }
 
+    // Состояния программы
     int currentPuzzle = 0;
+    bool menuOpen = false;
+    bool showResult = false;
+    sf::Clock resultTimer;
+    sf::Text resultText("", font, 72);
+    resultText.setStyle(sf::Text::Bold);
 
-    // Основной цикл программы
+    // Главный цикл
     while (window.isOpen())
     {
         sf::Event event;
@@ -234,83 +147,94 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
 
+            // Обработка кликов
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                if (event.mouseButton.button == sf::Mouse::Left)
+                sf::Vector2f mousePos = window.mapPixelToCoords(
+                    {event.mouseButton.x, event.mouseButton.y});
+
+                // Закрытие программы
+                if (closeButton.getGlobalBounds().contains(mousePos))
                 {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
-                    if (closeButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
-                    {
-                        window.close();
-                    }
-
-                    if (checkButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
-                    {
-                        bool result = Check("puzzleAnswer.txt", grid, gridSize);
-                        if (result) {
-                            Answer.setString("True");
-                        } else {
-                            Answer.setString("False");
-                        }
-
-
-                    }
-
-                    if (chooseButton.getGlobalBounds().contains(mousePos.x, mousePos.y))
-                    {
-                        menuOpen = !menuOpen;
-                    }
-
-                    // Обработка выбора опции в выпадающем меню
-                    if (menuOpen)
-                    {
-                        for (int i = 0; i < kMaxPuzzles; ++i)
-                        {
-                            if (optionsButton[i].getGlobalBounds().contains(mousePos.x, mousePos.y))
-                            {
-                                menuOpen = false;
-                                chooseButtonText.setString(optionsText[i].getString());
-
-                                currentPuzzle = i; // Сохраняем выбор
-
-                                // Очищаем предыдущие данные
-                                CleanupNumberArray(lineNumbers, gridSize);
-                                CleanupNumberArray(ColumnNumbers, gridSize);
-                                ResetGrid(grid, gridSize);
-                                lineNumbers = new Number*[gridSize];
-                                ColumnNumbers = new Number*[gridSize];
-                                for (int i = 0; i < gridSize; ++i) {
-                                    lineNumbers[i] = new Number[gridSize];
-                                    ColumnNumbers[i] = new Number[gridSize];
-                                }
-
-                                // Вызываем соответствующую функцию загрузки
-                                switch(currentPuzzle) {
-                                    case 0:
-                                        processKeys(lineNumbers, ColumnNumbers, "puzzle1.txt", gridSize, font);
-                                        break;
-                                    case 1:
-                                        processKeys(lineNumbers, ColumnNumbers, "puzzle2.txt", gridSize, font);
-                                        break;
-                                    case 2:
-                                        processKeys(lineNumbers, ColumnNumbers, "puzzle3.txt", gridSize, font);
-                                        break;
-                                }
-                            }
-                        }
-                    }
-
-                    // Обработка нажатия на клетки
-                    HandleCellClick(grid, mousePos, gridSize);
+                    window.close();
                 }
+
+                // Проверка решения
+                if (checkButton.getGlobalBounds().contains(mousePos))
+                {
+                    std::string answerFile = "puzzles/puzzleAnswer" +
+                                             std::to_string(currentPuzzle + 1) + ".txt";
+                    bool correct = GridUtils::Check(answerFile.c_str(), grid, gridSize);
+
+                    resultText.setString(correct ? "CORRECT!" : "WRONG!");
+                    resultText.setFillColor(correct ? sf::Color::Green : sf::Color::Red);
+                    resultText.setPosition(
+                        (window.getSize().x - resultText.getLocalBounds().width) / 2,
+                        (window.getSize().y - resultText.getLocalBounds().height) / 2);
+                    showResult = true;
+                    resultTimer.restart();
+                }
+
+                // Открытие меню
+                if (chooseButton.getGlobalBounds().contains(mousePos))
+                {
+                    menuOpen = !menuOpen;
+                }
+
+                // Выбор пазла
+                if (menuOpen)
+                {
+                    for (int i = 0; i < maxPuzzles; ++i)
+                    {
+                        if (puzzleButtons[i].getGlobalBounds().contains(mousePos))
+                        {
+                            std::string puzzleFile = "puzzle" +
+                                                     std::to_string(i + 1) + ".txt";
+
+                            if (!fs::exists(puzzleFile))
+                            {
+                                std::cerr << "Missing puzzle file: " << puzzleFile << "\n";
+                                continue;
+                            }
+
+                            currentPuzzle = i;
+                            chooseText.setString("Puzzle " + std::to_string(i + 1));
+
+                            // Сброс данных
+                            GridUtils::ResetGrid(grid, gridSize);
+                            CleanupNumberArray(lineNumbers, gridSize);
+                            CleanupNumberArray(columnNumbers, gridSize);
+
+                            // Пересоздание массивов
+                            lineNumbers = new Number *[gridSize];
+                            columnNumbers = new Number *[gridSize];
+                            for (int j = 0; j < gridSize; ++j)
+                            {
+                                lineNumbers[j] = new Number[gridSize];
+                                columnNumbers[j] = new Number[gridSize];
+                            }
+
+                            // Загрузка новых подсказок
+                            processKeys(lineNumbers, columnNumbers,
+                                        puzzleFile.c_str(),
+                                        gridSize, font);
+                            menuOpen = false;
+                        }
+                    }
+                }
+
+                // Обработка клеток
+                GridUtils::HandleCellClick(grid,
+                                           sf::Mouse::getPosition(window),
+                                           gridSize);
             }
         }
 
         // Отрисовка
         window.clear();
-        window.draw(backgroundSprite);
+        window.draw(background);
 
+        // Сетка
         for (int i = 0; i < gridSize; ++i)
         {
             for (int j = 0; j < gridSize; ++j)
@@ -319,38 +243,13 @@ int main()
             }
         }
 
+        // Интерфейс
         window.draw(closeButton);
         window.draw(checkButton);
         window.draw(chooseButton);
-        window.draw(closeButtonText);
-        window.draw(checkButtonText);
-        window.draw(chooseButtonText);
-
-        if (menuOpen)
-        {
-            for (int i = 0; i < kMaxPuzzles; ++i)
-            {
-                window.draw(optionsButton[i]);
-                window.draw(optionsText[i]);
-            }
-        }
-
-        for (int i = 0; i < gridSize; ++i)
-        {
-            for (int j = 0; j < gridSize; ++j)
-            {
-                window.draw(lineNumbers[i][j].text);
-            }
-        }
-
-        for (int i = 0; i < gridSize; ++i)
-        {
-            for (int j = 0; j < gridSize; ++j)
-            {
-                window.draw(ColumnNumbers[i][j].text);
-            }
-        }
-
+        window.draw(closeText);
+        window.draw(checkText);
+        window.draw(chooseText);
         window.draw(line1);
         window.draw(line2);
         window.draw(line3);
@@ -360,18 +259,55 @@ int main()
         window.draw(line7);
         window.draw(line8);
 
-        window.draw(Answer);
+        // Меню пазлов
+        if (menuOpen)
+        {
+            for (int i = 0; i < maxPuzzles; ++i)
+            {
+                window.draw(puzzleButtons[i]);
+                window.draw(puzzleTexts[i]);
+            }
+        }
+
+        // Подсказки
+        for (int i = 0; i < gridSize; ++i)
+        {
+            for (int j = 0; j < gridSize; ++j)
+            {
+                if (!lineNumbers[i][j].text.getString().isEmpty())
+                {
+                    window.draw(lineNumbers[i][j].text);
+                }
+                if (!columnNumbers[i][j].text.getString().isEmpty())
+                {
+                    window.draw(columnNumbers[i][j].text);
+                }
+            }
+        }
+
+        // Результат проверки
+        if (showResult)
+        {
+            window.draw(resultText);
+            if (resultTimer.getElapsedTime().asSeconds() > 2.0f)
+            {
+                showResult = false;
+            }
+        }
 
         window.display();
     }
 
+    // Очистка памяти
+    GridUtils::ResetGrid(grid, gridSize);
     CleanupNumberArray(lineNumbers, gridSize);
-    CleanupNumberArray(ColumnNumbers, gridSize);
+    CleanupNumberArray(columnNumbers, gridSize);
 
-    for (int i = 0; i < gridSize; ++i) {
+    for (int i = 0; i < gridSize; ++i)
+    {
         delete[] grid[i];
     }
     delete[] grid;
 
-    return 0;
+    return EXIT_SUCCESS;
 }

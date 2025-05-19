@@ -23,16 +23,7 @@ public:
     Cell(int x, int y);
 };
 
-// class Number
-// {
-// public:
-//     sf::Text text;
-
-//     Number();
-//     Number(const char *buffer, const sf::Font &font, int x, int y);
-// };
-
-void CreateGrid(Cell** grid, int gridSize);
-void HandleCellClick(Cell** grid, sf::Vector2i mousePos, int gridSize);
+void CreateGrid(Cell **grid, int gridSize);
+void HandleCellClick(Cell **grid, sf::Vector2i mousePos, int gridSize);
 
 #endif // CROSSWORD_H

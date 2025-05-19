@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
-project(SFML_Test_Project)
+project(CrosswordSolver)
 
-find_package(SFML REQUIRED COMPONENTS graphics window system)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE")
 
-add_executable(sfml_test main.cpp workingKeys.cpp)
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
-target_link_libraries(sfml_test
-    PRIVATE
+add_executable(CrosswordSolver
+    main.cpp
+    Number.cpp
+    workingKeys.cpp
+    Cell.cpp
+    GridManager.cpp
+)
+
+target_link_libraries(CrosswordSolver
     sfml-graphics
     sfml-window
     sfml-system
 )
-
-if(UNIX AND NOT APPLE)
-    find_package(X11 REQUIRED)
-    target_link_libraries(sfml_test PRIVATE ${X11_LIBRARIES})
-endif()
