@@ -82,6 +82,16 @@ bool Check(char* name, Cell** grid, int gridSize) {
     return true;
 }
 
+// Добавляем новые функции в конец файла
+void ResetGrid(Cell** grid, int gridSize) {
+    for (int i = 0; i < gridSize; ++i) {
+        for (int j = 0; j < gridSize; ++j) {
+            grid[i][j].status = 0;
+            grid[i][j].shape.setFillColor(sf::Color{255, 255, 255, 150});
+        }
+    }
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Japanese Crossword");
@@ -175,8 +185,6 @@ int main()
         ColumnNumbers[i] = new Number[gridSize];
     }
 
-    processKeys(lineNumbers, ColumnNumbers, "puzzle.txt", gridSize, font);
-
     // Линии разделения сетки
     sf::RectangleShape line1(sf::Vector2f(830, 5));
     line1.setPosition(95, 95);
@@ -214,6 +222,8 @@ int main()
     sf::Text Answer("None", font, 24);
     Answer.setFillColor(sf::Color::White);
     Answer.setPosition(20, 20);
+
+    int currentPuzzle = 0;
 
     // Основной цикл программы
     while (window.isOpen())
@@ -261,6 +271,32 @@ int main()
                             {
                                 menuOpen = false;
                                 chooseButtonText.setString(optionsText[i].getString());
+
+                                currentPuzzle = i; // Сохраняем выбор
+
+                                // Очищаем предыдущие данные
+                                CleanupNumberArray(lineNumbers, gridSize);
+                                CleanupNumberArray(ColumnNumbers, gridSize);
+                                ResetGrid(grid, gridSize);
+                                lineNumbers = new Number*[gridSize];
+                                ColumnNumbers = new Number*[gridSize];
+                                for (int i = 0; i < gridSize; ++i) {
+                                    lineNumbers[i] = new Number[gridSize];
+                                    ColumnNumbers[i] = new Number[gridSize];
+                                }
+
+                                // Вызываем соответствующую функцию загрузки
+                                switch(currentPuzzle) {
+                                    case 0:
+                                        processKeys(lineNumbers, ColumnNumbers, "puzzle1.txt", gridSize, font);
+                                        break;
+                                    case 1:
+                                        processKeys(lineNumbers, ColumnNumbers, "puzzle2.txt", gridSize, font);
+                                        break;
+                                    case 2:
+                                        processKeys(lineNumbers, ColumnNumbers, "puzzle3.txt", gridSize, font);
+                                        break;
+                                }
                             }
                         }
                     }
